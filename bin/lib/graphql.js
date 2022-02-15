@@ -1,5 +1,5 @@
 import axios from "axios";
-import { parseArgitRemoteURI } from "./arweave.js";
+import { parseArgitRemoteURI, getDataReliably } from "./arweave.js";
 import { newProgressBar } from "./util.js";
 
 const graphQlEndpoint = "https://arweave.net/graphql";
@@ -27,7 +27,6 @@ export const getOidByRef = async (arweave, remoteURI, ref) => {
             { name: "Repo", values: ["${repoName}"] }
             { name: "Version", values: ["0.0.2"] }
             { name: "Ref", values: ["${ref}"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
           first: 10
         ) {
@@ -66,7 +65,7 @@ export const getOidByRef = async (arweave, remoteURI, ref) => {
   });
 
   const id = edges[0].node.id;
-  const response = await arweave.transactions.getData(id, {
+  const response = await getDataReliably(arweave, id, {
     decode: true,
     string: true,
   });
@@ -91,7 +90,6 @@ export const getAllRefs = async (arweave, remoteURI) => {
             { name: "Type", values: ["update-ref"] }
             { name: "Repo", values: ["${repoName}"] }
             { name: "Version", values: ["0.0.2"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
         ) {
           edges {
@@ -141,7 +139,6 @@ export const getTransactionIdByObjectId = async (remoteURI, oid) => {
             { name: "Version", values: ["0.0.2"] }
             { name: "Repo", values: ["${repoName}"] }
             { name: "Type", values: ["git-object"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
           first: 1
         ) {
@@ -175,7 +172,6 @@ export const fetchGitObjects = async (arweave, arData, remoteURI) => {
             { name: "Type", values: ["git-objects-bundle"] }
             { name: "Version", values: ["0.0.2"] }
             { name: "Repo", values: ["${repoName}"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
         ) {
           edges {
@@ -200,7 +196,7 @@ export const fetchGitObjects = async (arweave, arData, remoteURI) => {
   await Promise.all(
     edges.map(async (edge) => {
       const txid = edge.node.id;
-      const txData = await arweave.transactions.getData(txid, {
+      const txData = await getDataReliably(arweave, txid, {
         decode: true,
         string: true,
       });

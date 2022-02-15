@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as smartweave from "smartweave";
 import shell from "shelljs";
 import pkg from "bignumber.js";
@@ -16,6 +17,35 @@ export function parseArgitRemoteURI(remoteURI) {
   const repoName = matchGroups[2];
 
   return { repoOwnerAddress, repoName };
+}
+
+export async function getDataReliably(arweave, txid, options) {
+  try {
+    const response = await arweave.transactions.getData(txid, options);
+    return response;
+  } catch {
+    const apiCfg = arweave.getConfig().api;
+    const gatewayEndpoint = `${apiCfg.protocol}://${apiCfg.host}:${apiCfg.port}/`
+    const { data } = await axios.get(gatewayEndpoint + txid, {
+      responseType: 'arraybuffer'
+    });
+
+    try {
+      const uploader = await arweave.transactions.getUploader(txid, data);
+
+      while (!uploader.isComplete){
+        await uploader.uploadChunk();
+      }
+    } catch {}
+
+    if (options && options.decode && !options.string) {
+      return data;
+    }
+    if (options && options.decode && options.string) {
+      return arweave.utils.bufferToString(data);
+    }
+    return arweave.utils.bufferTob64Url(data);
+  }
 }
 
 export async function makeUpdateRefDataItem(

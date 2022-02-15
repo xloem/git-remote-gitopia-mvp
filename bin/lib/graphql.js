@@ -1,8 +1,9 @@
 import axios from "axios";
-import { arweave, parseArgitRemoteURI } from "./arweave.js";
+import { arweave, parseArgitRemoteURI, getDataReliably } from "./arweave.js";
 import { newProgressBar } from "./util.js";
 
-const graphQlEndpoint = "https://arweave.net/graphql";
+const apiCfg = arweave.getConfig().api;
+const graphQlEndpoint = `${apiCfg.protocol}://${apiCfg.host}:${apiCfg.port}/graphql`
 
 const getTagValue = (tagName, tags) => {
   for (const tag of tags) {
@@ -27,7 +28,6 @@ export const getOidByRef = async (remoteURI, ref) => {
             { name: "Repo", values: ["${repoName}"] }
             { name: "Version", values: ["0.0.2"] }
             { name: "Ref", values: ["${ref}"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
           first: 1
         ) {
@@ -50,7 +50,7 @@ export const getOidByRef = async (remoteURI, ref) => {
   }
 
   const id = edges[0].node.id;
-  const response = await arweave.transactions.getData(id, {
+  const response = await getDataReliably(id, {
     decode: true,
     string: true,
   });
@@ -75,7 +75,6 @@ export const getAllRefs = async (remoteURI) => {
             { name: "Type", values: ["update-ref"] }
             { name: "Repo", values: ["${repoName}"] }
             { name: "Version", values: ["0.0.2"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
         ) {
           edges {
@@ -125,7 +124,6 @@ export const getTransactionIdByObjectId = async (remoteURI, oid) => {
             { name: "Version", values: ["0.0.2"] }
             { name: "Repo", values: ["${repoName}"] }
             { name: "Type", values: ["git-object"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
           first: 1
         ) {
@@ -159,7 +157,6 @@ export const fetchGitObjects = async (arData, remoteURI) => {
             { name: "Type", values: ["git-objects-bundle"] }
             { name: "Version", values: ["0.0.2"] }
             { name: "Repo", values: ["${repoName}"] }
-            { name: "App-Name", values: ["Gitopia"] }
           ]
         ) {
           edges {
@@ -184,7 +181,7 @@ export const fetchGitObjects = async (arData, remoteURI) => {
   await Promise.all(
     edges.map(async (edge) => {
       const txid = edge.node.id;
-      const txData = await arweave.transactions.getData(txid, {
+      const txData = await getDataReliably(txid, {
         decode: true,
         string: true,
       });

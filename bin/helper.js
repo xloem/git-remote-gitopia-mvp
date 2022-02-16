@@ -131,12 +131,19 @@ export default class Helper {
 
     const refs = await this._fetchRefs();
     // tslint:disable-next-line:forin
+    var HEAD = null;
     for (const ref in refs) {
+      if (HEAD === null ||
+          ref == 'refs/heads/master' ||
+          ref == 'refs/heads/main')
+      {
+        HEAD = ref;
+      }
       this._send(refs[ref] + " " + ref);
     }
 
-    // force HEAD to master and update once dgit handle symbolic refs
-    this._send("@refs/heads/master" + " " + "HEAD");
+    // force HEAD and update once dgit handle symbolic refs
+    this._send("@" + HEAD + " " + "HEAD");
     this._send("");
   }
 

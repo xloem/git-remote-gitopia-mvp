@@ -56,12 +56,42 @@ export const getOidByRef = async (arweave, remoteURI, ref) => {
   }
 
   edges.sort((a, b) => {
-    if (b.node.block.height - a.node.block.height < 50) {
+    // This implementation treats block height as canonical, then tagged time if block height matches.
+    // A more accurate implementation would use the transaction graph to discern more ordering information.
+	  
+    // This code replaces prior code, adding support for mempool transactions.
+    // The prior code only acted for a portion of block differences, maybe to handle a graphql bug,
+    // keeping the existing order unmodified otherwise.
+    //
+    // Without documentation of the bug, this new code sorts all transactions.
+    // This could make for surprises if the user's clock is changed before a block is mined.
+    // Maybe a solution would be to simply remove the unix time comparison, and return 0.
+
+    var aHeight = null, bHeight = null;
+
+    // if at least one of the transactions is mined, cache relative heights for them
+    if (a.node.block !== null) {
+      aHeight = a.node.block.height;
+      if (b.node.block !== null) {
+        bHeight = b.node.block.height;
+      } else {
+        // b is in mempool but a is not, treat it is after a
+        bHeight = aHeight + 1;
+      }
+    } else {
+      if (b.node.block !== null) {
+        bHeight = b.node.block.height;
+        // a is in mempool but b is not, treat it as after b
+        aHeight = bHeight + 1
+      }
+    }
+    if (bHeight == aHeight) {
       const bUnixTime = Number(getTagValue("Unix-Time", b.node.tags));
       const aUnixTime = Number(getTagValue("Unix-Time", a.node.tags));
       return bUnixTime - aUnixTime;
+    } else {
+      return bHeight - aHeight;
     }
-    return 0;
   });
 
   const id = edges[0].node.id;

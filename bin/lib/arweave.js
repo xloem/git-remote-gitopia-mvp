@@ -8,13 +8,13 @@ import { VERSION } from "../helper.js";
 import { newProgressBar } from "./util.js";
 
 // prettier-ignore
-const argitRemoteURIRegex = '^gitopia:\/\/([a-zA-Z0-9-_]{43})\/([A-Za-z0-9_.-]*)'
+const argitRemoteURIRegex = '^(gitopia-mvp|gitopia|dgit|argit):\/\/([a-zA-Z0-9-_]{43})\/([A-Za-z0-9_.-]*)'
 const contractId = "1ljLAR55OhtenU0iDWkLGT6jF4ApxeQd5P0gXNyNJXg";
 
 export function parseArgitRemoteURI(remoteURI) {
   const matchGroups = remoteURI.match(argitRemoteURIRegex);
-  const repoOwnerAddress = matchGroups[1];
-  const repoName = matchGroups[2];
+  const repoOwnerAddress = matchGroups[2];
+  const repoName = matchGroups[3];
 
   return { repoOwnerAddress, repoName };
 }

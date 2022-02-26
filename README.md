@@ -1,23 +1,23 @@
-# git-remote-gitopia
+# git-remote-gitopia-mvp
 
-[![](https://img.shields.io/npm/v/@gitopia/git-remote-gitopia?color=)](https://www.npmjs.com/package/@gitopia/git-remote-gitopia)
-[![Gitopia](https://img.shields.io/endpoint?style=&url=https://gitopia.org/mirror-badge.json)](https://gitopia.org/#/z_TqsbmVJOKzpuQH4YrYXv_Q0DrkwDwc0UqapRrE0Do/git-remote-gitopia)
+This is a fork of the old arweave git remote helper for what is now [Gitopia](https://gitopia.org).
 
-git remote helper for [Gitopia](https://gitopia.org)  
-0.01 AR or 10% of the transaction fee, whichever is greater, will be charged as PST fee on git push. You don’t require an Arweave wallet for cloning repositories hence it’s free.
+It provides for making use of git repositories on the arweave blockchain.
+
+Help is needed, as gitopia has moved to their own chain. Please contribute work or changes to this repo, or fork it again.
 
 ## Installation
 
-`npm install -g @gitopia/git-remote-gitopia`
+`yarn global add https://github.com/xloem/git-remote-gitopia-mvp`
 
 ## Steps to Build
 
-- `npm install`
-- `npm link`
+- `yarn install`
+- `yarn link`
 
 ## Usage
 
 Set the following environment variable with the path of your Arweave wallet file.  
 `export GITOPIA_WALLET_PATH=/path/to/wallet`
 
-You don't need to run `git-remote-gitopia` directly, it will be called automatically by `git` when it encounters remote of the form `gitopia://`
+You don't need to run `git-remote-gitopia-mvp` directly, it will be called automatically by `git` when it encounters remote of the form `gitopia-mvp://`

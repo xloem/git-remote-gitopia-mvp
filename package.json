@@ -1,10 +1,10 @@
 {
-  "name": "@gitopia/git-remote-gitopia",
+  "name": "git-remote-gitopia-mvp",
   "version": "0.1.7",
   "description": "git-remote-helper for Gitopia",
   "main": "bin/index.mjs",
   "bin": {
-    "git-remote-gitopia": "bin/index.mjs"
+    "git-remote-gitopia-mvp": "bin/index.mjs"
   },
   "type": "module",
   "dependencies": {
@@ -23,7 +23,7 @@
     "shelljs": "^0.8.3",
     "simple-git": "^1.107.0",
     "smart-buffer": "^4.0.2",
-    "smartweave": "github:TheTechTrap/SmartWeave#v0.4.0",
+    "smartweave": "^0.4.46",
     "url-parse": "^1.4.4",
     "zlib": "^1.0.5"
   },
